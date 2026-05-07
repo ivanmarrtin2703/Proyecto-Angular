@@ -1,0 +1,7 @@
+{
+  "name": "taskmate",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

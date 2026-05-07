@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>TaskMate</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Saludo personalizado -->
+  <div class="welcome-header">
+    <div class="welcome-text">
+      <h2>¡Hola, Iván!</h2>
+      <p>Bienvenido de nuevo a tu panel de control.</p>
+    </div>
+    <ion-badge color="success" class="status-badge">Productivo</ion-badge>
+  </div>
+
+  <!-- Mi progreso (Reto Bonus) -->
+  <div class="progress-section ion-margin-bottom">
+    <div class="progress-labels">
+      <ion-label color="medium">Mi progreso (Sprint 1/8)</ion-label>
+      <ion-label color="primary"><strong>12.5%</strong></ion-label>
+    </div>
+    <ion-progress-bar value="0.125" color="primary"></ion-progress-bar>
+  </div>
+
+  <!-- Tarjeta de resumen -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen del día</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="stat-col">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Pendientes</div>
+          </ion-col>
+          <ion-col class="stat-col">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Completadas</div>
+          </ion-col>
+        </ion-row>  
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botón de acción principal -->
+  <ion-button expand="block" color="primary" class="ion-margin-top">
+    <ion-icon name="add" slot="start"></ion-icon>
+    Nueva Tarea
+  </ion-button>
+
+  <!-- Tareas recientes -->
+  <ion-list-header class="ion-margin-top">
+    <ion-label>Tareas recientes</ion-label>
+  </ion-list-header>
+  <ion-list lines="inset">
+    <ion-item>
+      <ion-icon name="ellipse-outline" slot="start" color="medium"></ion-icon>
+      <ion-label>
+        <h2>Comprar leche</h2>
+        <p>Supermercado • 09:00 AM</p>
+      </ion-label>
+      <ion-icon name="time-outline" slot="end" color="medium"></ion-icon>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+      <ion-label>
+        <h2>Estudiar Angular</h2>
+        <p>Curso Udemy • Completado</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="ellipse-outline" slot="start" color="medium"></ion-icon>
+      <ion-label>
+        <h2>Gimnasio</h2>
+        <p>Entrenamiento • 18:00 PM</p>
+      </ion-label>
+      <ion-icon name="time-outline" slot="end" color="medium"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

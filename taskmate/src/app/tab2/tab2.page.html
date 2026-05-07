@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>Mis Tareas</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="dark">
+    <ion-segment [value]="selectedSegment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="tareas">
+        <ion-label>Mis Tareas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="estadisticas">
+        <ion-label>Estadísticas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <!-- Sección de Mis Tareas -->
+  <div *ngIf="selectedSegment === 'tareas'">
+    <ion-list lines="inset">
+      <ion-item>
+        <ion-icon name="ellipse-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h2>Finalizar proyecto Ionic</h2>
+          <p>Prioridad: Alta • Hoy</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+        <ion-label>
+          <h2>Repasar conceptos de Angular</h2>
+          <p>Completado ayer</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="ellipse-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h2>Configurar Firebase</h2>
+          <p>Próximo Sprint</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Sección de Estadísticas -->
+  <div *ngIf="selectedSegment === 'estadisticas'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Productividad</ion-card-title>
+        <ion-card-subtitle>Resumen semanal</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Has completado el <strong>75%</strong> de tus tareas esta semana. ¡Sigue así!</p>
+        <div class="stats-placeholder">
+          <ion-icon name="stats-chart" style="font-size: 64px; color: var(--ion-color-primary);"></ion-icon>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>
