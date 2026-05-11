@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab2"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="deleteTask()" color="danger">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (task) {
+    <div class="header-section">
+      <ion-badge [color]="task.priority === 'alta' ? 'danger' : task.priority === 'media' ? 'warning' : 'success'">
+        {{ task.priority | uppercase }}
+      </ion-badge>
+      
+      <div class="title-container ion-margin-top" (click)="editTitle()">
+        <h1>{{ task.title }}</h1>
+        <ion-icon name="create-outline" color="primary"></ion-icon>
+      </div>
+      
+      <p class="description">{{ task.description || 'Sin descripción' }}</p>
+      
+      <ion-item lines="none" class="date-item">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>
+          <p>Creada el {{ task.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
+    <ion-button expand="block" class="ion-margin-top"
+      [color]="task.completed ? 'medium' : 'success'"
+      (click)="toggleComplete()">
+      <ion-icon [name]="task.completed ? 'refresh-outline' : 'checkmark-done-outline'" slot="start"></ion-icon>
+      {{ task.completed ? 'Marcar como pendiente' : 'Marcar como completada' }}
+    </ion-button>
+  } @else {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner></ion-spinner>
+      <p>Cargando tarea...</p>
+    </div>
+  }
+</ion-content>

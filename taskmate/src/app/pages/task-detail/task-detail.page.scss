@@ -1,0 +1,41 @@
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+
+  h1 {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  ion-icon {
+    font-size: 1.2rem;
+    opacity: 0.7;
+  }
+
+  &:hover ion-icon {
+    opacity: 1;
+  }
+}
+
+.description {
+  font-size: 1.1rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 20px;
+}
+
+.date-item {
+  --padding-start: 0;
+  font-size: 0.9rem;
+  
+  ion-icon {
+    margin-inline-end: 8px;
+    font-size: 1.2rem;
+  }
+}
+
+.header-section {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--ion-color-light);
+}

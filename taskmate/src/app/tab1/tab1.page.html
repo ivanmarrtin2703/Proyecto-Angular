@@ -32,11 +32,11 @@
       <ion-grid>
         <ion-row>
           <ion-col class="stat-col">
-            <div class="stat-number">0</div>
+            <div class="stat-number">{{ stats.pending }}</div>
             <div class="stat-label">Pendientes</div>
           </ion-col>
           <ion-col class="stat-col">
-            <div class="stat-number">0</div>
+            <div class="stat-number">{{ stats.completed }}</div>
             <div class="stat-label">Completadas</div>
           </ion-col>
         </ion-row>  
@@ -50,35 +50,28 @@
     Nueva Tarea
   </ion-button>
 
-  <!-- Tareas recientes -->
+  <!-- Tareas prioritarias -->
   <ion-list-header class="ion-margin-top">
-    <ion-label>Tareas recientes</ion-label>
+    <ion-label>Tareas prioritarias (Alta)</ion-label>
   </ion-list-header>
   <ion-list lines="inset">
-    <ion-item>
-      <ion-icon name="ellipse-outline" slot="start" color="medium"></ion-icon>
-      <ion-label>
-        <h2>Comprar leche</h2>
-        <p>Supermercado • 09:00 AM</p>
-      </ion-label>
-      <ion-icon name="time-outline" slot="end" color="medium"></ion-icon>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
-      <ion-label>
-        <h2>Estudiar Angular</h2>
-        <p>Curso Udemy • Completado</p>
-      </ion-label>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="ellipse-outline" slot="start" color="medium"></ion-icon>
-      <ion-label>
-        <h2>Gimnasio</h2>
-        <p>Entrenamiento • 18:00 PM</p>
-      </ion-label>
-      <ion-icon name="time-outline" slot="end" color="medium"></ion-icon>
-    </ion-item>
+    @for (task of highPriorityTasks; track task.id) {
+      <ion-item>
+        <ion-icon [name]="task.completed ? 'checkmark-circle' : 'alert-circle'" slot="start" [color]="task.completed ? 'success' : 'danger'"></ion-icon>
+        <ion-label>
+          <h2>{{ task.title }}</h2>
+          <p>{{ task.category || 'Sin categoría' }} • {{ task.priority | titlecase }}</p>
+        </ion-label>
+        @if (!task.completed) {
+          <ion-icon name="time-outline" slot="end" color="medium"></ion-icon>
+        }
+      </ion-item>
+    } @empty {
+      <ion-item>
+        <ion-label color="medium" class="ion-text-center">
+          No hay tareas de alta prioridad.
+        </ion-label>
+      </ion-item>
+    }
   </ion-list>
 </ion-content>

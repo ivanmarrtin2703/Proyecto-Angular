@@ -1,62 +1,63 @@
 <ion-header>
-  <ion-toolbar color="dark">
+  <ion-toolbar>
     <ion-title>Mis Tareas</ion-title>
-  </ion-toolbar>
-  <ion-toolbar color="dark">
-    <ion-segment [value]="selectedSegment" (ionChange)="segmentChanged($event)">
-      <ion-segment-button value="tareas">
-        <ion-label>Mis Tareas</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="estadisticas">
-        <ion-label>Estadísticas</ion-label>
-      </ion-segment-button>
-    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  
-  <!-- Sección de Mis Tareas -->
-  <div *ngIf="selectedSegment === 'tareas'">
-    <ion-list lines="inset">
-      <ion-item>
-        <ion-icon name="ellipse-outline" slot="start" color="primary"></ion-icon>
-        <ion-label>
-          <h2>Finalizar proyecto Ionic</h2>
-          <p>Prioridad: Alta • Hoy</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
-        <ion-label>
-          <h2>Repasar conceptos de Angular</h2>
-          <p>Completado ayer</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon name="ellipse-outline" slot="start" color="primary"></ion-icon>
-        <ion-label>
-          <h2>Configurar Firebase</h2>
-          <p>Próximo Sprint</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </div>
+<ion-content>
+  <!-- Barra de búsqueda -->
+  <ion-searchbar 
+    placeholder="Buscar tarea..." 
+    [debounce]="250"
+    (ionInput)="filterTasks($event)">
+  </ion-searchbar>
 
-  <!-- Sección de Estadísticas -->
-  <div *ngIf="selectedSegment === 'estadisticas'">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Productividad</ion-card-title>
-        <ion-card-subtitle>Resumen semanal</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Has completado el <strong>75%</strong> de tus tareas esta semana. ¡Sigue así!</p>
-        <div class="stats-placeholder">
-          <ion-icon name="stats-chart" style="font-size: 64px; color: var(--ion-color-primary);"></ion-icon>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  <!-- Segmento de filtros -->
+  <ion-segment [(ngModel)]="selectedFilter" (ionChange)="applyFilter()">
+    <ion-segment-button value="all">
+      <ion-label>Todas</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pending">
+      <ion-label>Pendientes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="done">
+      <ion-label>Hechas</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
+  <!-- Lista de tareas -->
+  <ion-list>
+    @for (task of filteredTasks; track task.id) {
+      <ion-item button (click)="goToDetail(task.id)">
+        <ion-checkbox 
+          slot="start" 
+          [checked]="task.completed" 
+          (ionChange)="onToggle(task)">
+        </ion-checkbox>
+        <ion-label [class.completed]="task.completed">
+          <h2>{{ task.title }}</h2>
+          <p>{{ task.description }}</p>
+        </ion-label>
+        <ion-badge 
+          slot="end" 
+          [color]="task.priority === 'alta' ? 'danger' : task.priority === 'media' ? 'warning' : 'success'">
+          {{ task.priority }}
+        </ion-badge>
+      </ion-item>
+    } @empty {
+      <!-- Estado vacío -->
+      <div class="empty-state ion-text-center ion-padding">
+        <ion-icon name="clipboard-outline" size="large" color="medium"></ion-icon>
+        <h3>No hay tareas</h3>
+        <p>Crea tu primera tarea con el botón +</p>
+      </div>
+    }
+  </ion-list>
+
+  <!-- FAB para añadir -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="openAddModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

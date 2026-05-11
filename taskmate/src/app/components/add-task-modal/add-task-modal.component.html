@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nueva Tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Campo Título con validación visual (Reto Bonus) -->
+  <ion-item [class.ion-invalid]="submitted && !title.trim()">
+    <ion-label position="floating">Título *</ion-label>
+    <ion-input 
+      [(ngModel)]="title" 
+      placeholder="¿Qué tienes que hacer?"
+      autofocus>
+    </ion-input>
+  </ion-item>
+  @if (submitted && !title.trim()) {
+    <ion-note color="danger" class="ion-margin-start">
+      El título es obligatorio
+    </ion-note>
+  }
+
+  <ion-item class="ion-margin-top">
+    <ion-label position="floating">Descripción</ion-label>
+    <ion-textarea [(ngModel)]="description" rows="3"></ion-textarea>
+  </ion-item>
+
+  <ion-item class="ion-margin-top">
+    <ion-label>Prioridad</ion-label>
+    <ion-select [(ngModel)]="priority" placeholder="Selecciona">
+      <ion-select-option value="alta">🔴 Alta</ion-select-option>
+      <ion-select-option value="media">🟡 Media</ion-select-option>
+      <ion-select-option value="baja">🟢 Baja</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="save()">
+    Guardar Tarea
+  </ion-button>
+</ion-content>
