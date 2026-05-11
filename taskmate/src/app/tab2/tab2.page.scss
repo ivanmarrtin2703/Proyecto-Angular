@@ -9,6 +9,12 @@
   border: 2px dashed rgba(var(--ion-color-primary-rgb), 0.2);
 }
 
+ion-toolbar {
+  --background: #ffffff;
+  --color: #000000;
+  font-weight: 700;
+}
+
 ion-segment {
   --background: var(--ion-color-dark);
   --color: #ffffff;

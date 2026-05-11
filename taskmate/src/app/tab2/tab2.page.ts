@@ -31,12 +31,17 @@ export class Tab2Page {
     this.applyFilter();
   }
 
-  /**
-   * Captura el valor del searchbar y reaplica los filtros.
-   */
   filterTasks(event: any) {
     this.searchQuery = event.target.value?.toLowerCase() || '';
     this.applyFilter();
+  }
+
+  doRefresh(event: any) {
+    this.tasks = this.taskService.getTasks();
+    this.applyFilter();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
 
   /**

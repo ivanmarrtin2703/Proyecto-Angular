@@ -6,4 +6,5 @@ export interface Task {
   completed: boolean;
   createdAt: Date;
   category?: string;
+  dueDate?: string;
 }

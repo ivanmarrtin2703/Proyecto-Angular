@@ -45,4 +45,17 @@
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <!-- Botón para borrar datos (Reto Bonus) -->
+  <div class="ion-margin-top ion-padding-top">
+    <ion-button expand="block" color="danger" fill="outline" (click)="clearAllTasks()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Borrar todos los datos
+    </ion-button>
+    <p class="ion-text-center">
+      <small style="color: var(--ion-color-medium)">
+        Versión 1.0.0 — Persistencia Local habilitada
+      </small>
+    </p>
+  </div>
 </ion-content>
