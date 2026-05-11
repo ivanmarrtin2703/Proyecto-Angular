@@ -2,8 +2,18 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+/** Misma máquina / misma red: el API suele estar en el puerto 3000 que el host de la app. */
+function resolveApiBase(fallback: string): string {
+  if (typeof window === 'undefined' || !window.location?.hostname) {
+    return fallback;
+  }
+  const { protocol, hostname } = window.location;
+  return `${protocol}//${hostname}:3000`;
+}
+
 export const environment = {
-  production: false
+  production: false,
+  apiBase: resolveApiBase('http://localhost:3000')
 };
 
 /*

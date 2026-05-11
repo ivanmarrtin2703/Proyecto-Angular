@@ -1,133 +1,96 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { Task } from '../models/task.model';
+import { ApiService } from './api.service';
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: any;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
-  private tasks: Task[] = [];
-  private nextId = 1;
-  private readonly STORAGE_KEY = 'taskmate_tasks';
-  private readonly ID_KEY = 'taskmate_nextId';
-
-  constructor() {
-    this.loadFromStorage();
-  }
-
-  private saveToStorage(): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.tasks));
-    localStorage.setItem(this.ID_KEY, String(this.nextId));
-  }
-
-  private loadFromStorage(): void {
-    const saved = localStorage.getItem(this.STORAGE_KEY);
-    const savedId = localStorage.getItem(this.ID_KEY);
-    
-    if (saved) {
-      this.tasks = JSON.parse(saved).map((t: any) => ({
-        ...t,
-        createdAt: new Date(t.createdAt)
-      }));
-    } else {
-      // Tareas iniciales si no hay nada guardado
-      this.tasks = [
-        { id: 1, title: 'Aprender Ionic', description: 'Completar el Sprint 2', priority: 'alta', completed: false, createdAt: new Date() },
-        { id: 2, title: 'Hacer ejercicio', description: '30 minutos de cardio', priority: 'media', completed: true, createdAt: new Date() },
-        { id: 3, title: 'Leer libro', description: 'Clean Code - capítulo 3', priority: 'baja', completed: false, createdAt: new Date() },
-      ];
-      this.nextId = 4;
-      this.saveToStorage();
-    }
-    
-    if (savedId) this.nextId = parseInt(savedId);
-  }
+  private apiService = inject(ApiService);
 
   /**
-   * Retorna el array de tareas actual.
+   * Obtiene todas las tareas desde el backend.
    */
-  getTasks(): Task[] { 
-    return [...this.tasks]; 
+  getTasks(): Observable<Task[]> {
+    return this.apiService.get<ApiResponse<Task[]>>('tasks').pipe(
+      map(res => res.data)
+    );
   }
 
   /**
    * Busca una tarea por su ID.
    */
-  getTaskById(id: number): Task | undefined {
-    return this.tasks.find(t => t.id === id);
+  getTaskById(id: number): Observable<Task> {
+    return this.apiService.get<ApiResponse<Task>>(`tasks/${id}`).pipe(
+      map(res => res.data)
+    );
   }
 
   /**
    * Agrega una nueva tarea.
    */
-  addTask(data: Omit<Task, 'id' | 'createdAt'>): Task {
-    const task: Task = { 
-      ...data, 
-      id: this.nextId++, 
-      createdAt: new Date(),
-      completed: data.completed ?? false
-    };
-    this.tasks.push(task);
-    this.saveToStorage();
-    return task;
+  addTask(data: Partial<Task>): Observable<Task> {
+    return this.apiService.post<ApiResponse<Task>>('tasks', {
+      title: data.title,
+      description: data.description || '',
+      priority: data.priority || 'media',
+      category: data.category || null,
+      dueDate: data.dueDate || null
+    }).pipe(
+      map(res => res.data)
+    );
   }
+
 
   /**
    * Cambia el estado de completado de una tarea.
+   * Solo envía el campo completed al backend.
    */
-  toggleComplete(id: number): void {
-    const task = this.tasks.find(t => t.id === id);
-    if (task) {
-      task.completed = !task.completed;
-      this.saveToStorage();
-    }
+  toggleComplete(task: Task): Observable<Task> {
+    return this.apiService.put<ApiResponse<Task>>(`tasks/${task.id}`, {
+      completed: !task.completed
+    }).pipe(
+      map(res => res.data)
+    );
   }
 
   /**
    * Elimina una tarea por ID.
    */
-  deleteTask(id: number): void {
-    this.tasks = this.tasks.filter(t => t.id !== id);
-    this.saveToStorage();
+  deleteTask(id: number): Observable<any> {
+    return this.apiService.delete(`tasks/${id}`);
   }
 
   /**
-   * Actualiza una tarea existente.
+   * Elimina TODAS las tareas.
    */
-  updateTask(id: number, data: Partial<Task>): void {
-    const index = this.tasks.findIndex(t => t.id === id);
-    if (index !== -1) {
-      this.tasks[index] = { ...this.tasks[index], ...data };
-      this.saveToStorage();
-    }
+  clearAllTasks(): Observable<any> {
+    return this.apiService.delete('tasks');
+  }
+
+
+  /**
+   * Actualiza una tarea existente (parcial).
+   */
+  updateTask(id: number, data: Partial<Task>): Observable<Task> {
+    return this.apiService.put<ApiResponse<Task>>(`tasks/${id}`, data).pipe(
+      map(res => res.data)
+    );
   }
 
   /**
-   * Retorna estadísticas básicas.
+   * Obtiene estadísticas desde el backend.
    */
-  getStats() {
-    const total = this.tasks.length;
-    const completed = this.tasks.filter(t => t.completed).length;
-    const pending = total - completed;
-    return {
-      total,
-      completed,
-      pending,
-      completionRate: total > 0 ? completed / total : 0,
-    };
-  }
-
-  /**
-   * Filtra las tareas por prioridad.
-   */
-  getTasksByPriority(priority: string): Task[] {
-    return this.tasks.filter(t => t.priority === priority);
-  }
-
-  /**
-   * Borra todas las tareas (Reto Bonus).
-   */
-  clearAll(): void {
-    this.tasks = [];
-    this.nextId = 1;
-    localStorage.removeItem(this.STORAGE_KEY);
-    localStorage.removeItem(this.ID_KEY);
+  getStats(): Observable<any> {
+    return this.apiService.get<ApiResponse<any>>('tasks/stats').pipe(
+      map(res => res.data)
+    );
   }
 }
+

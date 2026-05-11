@@ -1,0 +1,28 @@
+.due-block {
+  border-radius: 12px;
+  background: var(--ion-color-light, #f4f5f8);
+  padding: 8px 0 0;
+}
+
+.due-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 4px;
+}
+
+.due-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ion-color-dark, #222428);
+}
+
+.due-scroll {
+  max-height: 320px;
+  overflow: auto;
+}
+
+ion-datetime {
+  --background: transparent;
+  width: 100%;
+}

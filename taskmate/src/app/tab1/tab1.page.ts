@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonListHeader, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonBadge, IonProgressBar } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonListHeader, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonBadge, IonProgressBar, IonSpinner } from '@ionic/angular/standalone';
+
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { addIcons } from 'ionicons';
-import { add, checkmarkCircle, ellipseOutline, timeOutline, alertCircle, close } from 'ionicons/icons';
+import { add, checkmarkCircle, ellipseOutline, timeOutline, alertCircle, alertCircleOutline, close } from 'ionicons/icons';
+
 import { TaskService } from '../services/task.service';
 import { Task } from '../models/task.model';
 import { CommonModule } from '@angular/common';
@@ -17,9 +19,10 @@ import { AddTaskModalComponent } from '../components/add-task-modal/add-task-mod
   imports: [
     IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, 
     IonListHeader, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, 
-    IonCardContent, IonGrid, IonRow, IonCol, IonBadge, IonProgressBar, ExploreContainerComponent,
+    IonCardContent, IonGrid, IonRow, IonCol, IonBadge, IonProgressBar, IonSpinner, ExploreContainerComponent,
     CommonModule
   ],
+
 })
 export class Tab1Page {
   private taskService = inject(TaskService);
@@ -28,9 +31,12 @@ export class Tab1Page {
 
   urgentTasks: Task[] = [];
   stats = { total: 0, completed: 0, pending: 0, completionRate: 0 };
+  isLoading = false;
+  hasError = false;
 
   constructor() {
-    addIcons({ add, checkmarkCircle, ellipseOutline, timeOutline, alertCircle, close });
+    addIcons({ add, checkmarkCircle, ellipseOutline, timeOutline, alertCircle, alertCircleOutline, close });
+
   }
 
   ionViewWillEnter() {
@@ -38,13 +44,37 @@ export class Tab1Page {
   }
 
   loadData() {
-    // Reto Bonus: Tareas urgentes (Alta prioridad y pendientes)
-    this.urgentTasks = this.taskService.getTasks()
-      .filter(t => t.priority === 'alta' && !t.completed)
-      .slice(0, 3);
+    this.isLoading = true;
+    this.hasError = false;
     
-    this.stats = this.taskService.getStats();
+    // Cargar tareas para filtrar urgentes
+    this.taskService.getTasks().subscribe({
+      next: (tasks) => {
+        this.urgentTasks = tasks
+          .filter(t => t.priority === 'alta' && !t.completed)
+          .slice(0, 3);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.hasError = true;
+      }
+    });
+    
+    // Cargar estadísticas desde el backend
+    this.taskService.getStats().subscribe({
+      next: (res) => {
+        this.stats = {
+          ...res,
+          completionRate: res.total > 0 ? res.completed / res.total : 0
+        };
+      },
+      error: () => {
+        this.hasError = true;
+      }
+    });
   }
+
 
   async openAddModal() {
     const modal = await this.modalCtrl.create({
@@ -54,16 +84,17 @@ export class Tab1Page {
 
     const { data } = await modal.onWillDismiss();
     if (data) {
-      this.taskService.addTask({ ...data, completed: false });
-      this.loadData();
+      this.taskService.addTask({ ...data, completed: false }).subscribe(async () => {
+        this.loadData();
 
-      const toast = await this.toastCtrl.create({
-        message: '✅ Tarea creada correctamente',
-        duration: 2000,
-        position: 'bottom',
-        color: 'success'
+        const toast = await this.toastCtrl.create({
+          message: '✅ Tarea creada correctamente',
+          duration: 2000,
+          position: 'bottom',
+          color: 'success'
+        });
+        await toast.present();
       });
-      await toast.present();
     }
   }
 }

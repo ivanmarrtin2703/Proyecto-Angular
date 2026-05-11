@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="taskForm">
+  <form [formGroup]="taskForm" (ngSubmit)="$event.preventDefault(); save()">
     <!-- Campo Título con validación visual -->
     <ion-item [class.ion-invalid]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched">
       <ion-label position="floating">Título *</ion-label>
@@ -41,19 +41,26 @@
       </ion-select>
     </ion-item>
 
-    <!-- Campo Fecha Límite (Reto Bonus) -->
-    <ion-item class="ion-margin-top" [class.ion-invalid]="taskForm.get('dueDate')?.invalid && taskForm.get('dueDate')?.touched">
-      <ion-label>Fecha límite</ion-label>
-      <ion-datetime-button datetime="date"></ion-datetime-button>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime id="date" presentation="date" formControlName="dueDate"></ion-datetime>
-        </ng-template>
-      </ion-modal>
-      <ion-note slot="error">{{ dateError }}</ion-note>
-    </ion-item>
+    <!-- Fecha en línea: evita ion-modal anidado (falla dentro del modal de Ionic) y mantiene formControlName bajo el mismo <form>. -->
+    <div class="due-block ion-margin-top">
+      <div class="due-head">
+        <span class="due-title">Fecha límite (opcional)</span>
+        @if (selectedDueDate) {
+          <ion-button type="button" fill="clear" size="small" (click)="clearDueDate()">Quitar</ion-button>
+        }
+      </div>
+      <div class="due-scroll">
+        <ion-datetime
+          presentation="date"
+          [value]="selectedDueDate ?? undefined"
+          (ionChange)="onDueDateChange($event)"
+          [min]="minDueDate"
+          locale="es-ES">
+        </ion-datetime>
+      </div>
+    </div>
 
-    <ion-button expand="block" class="ion-margin-top" (click)="save()" [disabled]="taskForm.invalid">
+    <ion-button type="button" expand="block" class="ion-margin-top" (click)="save()" [disabled]="taskForm.invalid">
       Guardar Tarea
     </ion-button>
   </form>

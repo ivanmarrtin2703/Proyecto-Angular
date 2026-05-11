@@ -4,6 +4,7 @@ import { addIcons } from 'ionicons';
 import { school, calendar, trashOutline } from 'ionicons/icons';
 import { TaskService } from '../services/task.service';
 import { AlertController, ToastController } from '@ionic/angular/standalone';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-tab3',
@@ -38,10 +39,12 @@ export class Tab3Page {
           text: 'Sí, borrar todo',
           role: 'destructive',
           handler: () => {
-            this.taskService.clearAll();
-            this.showToast();
+            this.taskService.clearAllTasks().subscribe(() => {
+              this.showToast();
+            });
           }
         }
+
       ]
     });
 

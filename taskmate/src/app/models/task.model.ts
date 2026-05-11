@@ -4,7 +4,7 @@ export interface Task {
   description?: string;
   priority: 'alta' | 'media' | 'baja';
   completed: boolean;
-  createdAt: Date;
+  created_at: string;
   category?: string;
   dueDate?: string;
 }

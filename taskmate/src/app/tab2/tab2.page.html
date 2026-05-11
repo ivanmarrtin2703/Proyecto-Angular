@@ -29,34 +29,56 @@
     </ion-segment-button>
   </ion-segment>
 
+  <!-- Spinner de carga -->
+  @if (isLoading) {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando tareas...</p>
+    </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (hasError) {
+    <div class="ion-text-center ion-padding error-state">
+      <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
+      <h3>Error de conexión</h3>
+      <p>No se pudo conectar con el servidor. Verifica que el backend esté funcionando.</p>
+      <ion-button fill="clear" (click)="loadTasks()">Reintentar</ion-button>
+    </div>
+  }
+
   <!-- Lista de tareas -->
-  <ion-list>
-    @for (task of filteredTasks; track task.id) {
-      <ion-item button (click)="goToDetail(task.id)">
-        <ion-checkbox 
-          slot="start" 
-          [checked]="task.completed" 
-          (ionChange)="onToggle(task)">
-        </ion-checkbox>
-        <ion-label [class.completed]="task.completed">
-          <h2>{{ task.title }}</h2>
-          <p>{{ task.description }}</p>
-        </ion-label>
-        <ion-badge 
-          slot="end" 
-          [color]="task.priority === 'alta' ? 'danger' : task.priority === 'media' ? 'warning' : 'success'">
-          {{ task.priority }}
-        </ion-badge>
-      </ion-item>
-    } @empty {
-      <!-- Estado vacío -->
-      <div class="empty-state ion-text-center ion-padding">
-        <ion-icon name="clipboard-outline" size="large" color="medium"></ion-icon>
-        <h3>No hay tareas</h3>
-        <p>Crea tu primera tarea con el botón +</p>
-      </div>
-    }
-  </ion-list>
+  @if (!isLoading && !hasError) {
+    <ion-list>
+      @for (task of filteredTasks; track task.id) {
+        <ion-item button (click)="goToDetail(task.id)">
+          <ion-checkbox 
+            slot="start" 
+            [checked]="task.completed" 
+            (click)="$event.stopPropagation()"
+            (ionChange)="onToggle($event, task)">
+          </ion-checkbox>
+          <ion-label [class.completed]="task.completed">
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+          </ion-label>
+          <ion-badge 
+            slot="end" 
+            [color]="task.priority === 'alta' ? 'danger' : task.priority === 'media' ? 'warning' : 'success'">
+            {{ task.priority }}
+          </ion-badge>
+        </ion-item>
+      } @empty {
+        <!-- Estado vacío -->
+        <div class="empty-state ion-text-center ion-padding">
+          <ion-icon name="clipboard-outline" size="large" color="medium"></ion-icon>
+          <h3>No hay tareas</h3>
+          <p>Crea tu primera tarea con el botón +</p>
+        </div>
+      }
+    </ion-list>
+  }
+
 
   <!-- FAB para añadir -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

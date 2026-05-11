@@ -24,23 +24,21 @@ export class TaskDetailPage implements OnInit {
 
   ngOnInit() {
     const id = parseInt(this.route.snapshot.paramMap.get('id') || '0');
-    this.task = this.taskService.getTaskById(id);
-    
-    if (!this.task) {
-      this.router.navigate(['/tabs/tab2']);
-    }
+    this.taskService.getTaskById(id).subscribe({
+      next: (task) => {
+        this.task = task;
+      },
+      error: () => {
+        this.router.navigate(['/tabs/tab2']);
+      }
+    });
   }
 
   toggleComplete() {
     if (this.task) {
-      this.taskService.toggleComplete(this.task.id);
-      this.refreshTask();
-    }
-  }
-
-  private refreshTask() {
-    if (this.task) {
-      this.task = this.taskService.getTaskById(this.task.id);
+      this.taskService.toggleComplete(this.task).subscribe(updated => {
+        this.task = updated;
+      });
     }
   }
 
@@ -63,8 +61,9 @@ export class TaskDetailPage implements OnInit {
           text: 'Guardar',
           handler: (data) => {
             if (data.title && data.title.trim() !== '') {
-              this.taskService.updateTask(this.task!.id, { title: data.title });
-              this.refreshTask();
+              this.taskService.updateTask(this.task!.id, { title: data.title }).subscribe(updated => {
+                this.task = updated;
+              });
             }
           }
         }
@@ -84,8 +83,9 @@ export class TaskDetailPage implements OnInit {
           role: 'destructive',
           handler: () => {
             if (this.task) {
-              this.taskService.deleteTask(this.task.id);
-              this.router.navigate(['/tabs/tab2']);
+              this.taskService.deleteTask(this.task.id).subscribe(() => {
+                this.router.navigate(['/tabs/tab2']);
+              });
             }
           }
         }

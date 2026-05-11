@@ -5,75 +5,97 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Saludo personalizado -->
-  <div class="welcome-section">
-    <h2 class="ion-no-margin">¡Hola, Iván!</h2>
-    <p class="ion-no-margin">Tienes <strong>{{ stats.pending }} tareas</strong> pendientes.</p>
-  </div>
+  <!-- Spinner de carga -->
+  @if (isLoading) {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando datos...</p>
+    </div>
+  }
 
-  <!-- Tarjeta de resumen con progreso -->
-  <ion-card class="ion-no-margin ion-margin-top">
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col class="ion-text-center">
-            <div style="font-size: 1.5rem; font-weight: bold;">{{ stats.total }}</div>
-            <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Total</div>
-          </ion-col>
-          <ion-col class="ion-text-center">
-            <div style="font-size: 1.5rem; font-weight: bold; color: var(--ion-color-success);">{{ stats.completed }}</div>
-            <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Hechas</div>
-          </ion-col>
-          <ion-col class="ion-text-center">
-            <div style="font-size: 1.5rem; font-weight: bold; color: var(--ion-color-warning);">{{ stats.pending }}</div>
-            <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Pendientes</div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+  <!-- Mensaje de error -->
+  @if (hasError) {
+    <div class="ion-text-center ion-padding">
+      <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
+      <h3>Error de conexión</h3>
+      <p>No se pudo conectar con el servidor.</p>
+      <ion-button fill="clear" (click)="loadData()">Reintentar</ion-button>
+    </div>
+  }
 
-      <!-- Barra de progreso -->
-      <div class="ion-margin-top">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <small>Progreso del día</small>
-          <small>{{ stats.total > 0 ? ((stats.completed / stats.total) * 100 | number:'1.0-0') : 0 }}%</small>
+  @if (!isLoading && !hasError) {
+    <!-- Saludo personalizado -->
+    <div class="welcome-section">
+      <h2 class="ion-no-margin">¡Hola, Ivan!</h2>
+      <p class="ion-no-margin">Tienes <strong>{{ stats.pending }} tareas</strong> pendientes.</p>
+    </div>
+
+    <!-- Tarjeta de resumen con progreso -->
+    <ion-card class="ion-no-margin ion-margin-top">
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col class="ion-text-center">
+              <div style="font-size: 1.5rem; font-weight: bold;">{{ stats.total }}</div>
+              <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Total</div>
+            </ion-col>
+            <ion-col class="ion-text-center">
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--ion-color-success);">{{ stats.completed }}</div>
+              <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Hechas</div>
+            </ion-col>
+            <ion-col class="ion-text-center">
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--ion-color-warning);">{{ stats.pending }}</div>
+              <div style="font-size: 0.8rem; color: var(--ion-color-medium);">Pendientes</div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+
+        <!-- Barra de progreso -->
+        <div class="ion-margin-top">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <small>Progreso del día</small>
+            <small>{{ stats.total > 0 ? ((stats.completed / stats.total) * 100 | number:'1.0-0') : 0 }}%</small>
+          </div>
+          <ion-progress-bar
+            [value]="stats.total > 0 ? stats.completed / stats.total : 0"
+            color="success">
+          </ion-progress-bar>
         </div>
-        <ion-progress-bar
-          [value]="stats.total > 0 ? stats.completed / stats.total : 0"
-          color="success">
-        </ion-progress-bar>
-      </div>
-    </ion-card-content>
-  </ion-card>
+      </ion-card-content>
+    </ion-card>
 
-  <!-- Botón de acción principal -->
-  <ion-button expand="block" color="primary" class="ion-margin-top" (click)="openAddModal()">
-    <ion-icon name="add" slot="start"></ion-icon>
-    Nueva Tarea
-  </ion-button>
-
-  <!-- Sección Tareas Urgentes (Reto Bonus) -->
-  <div class="ion-margin-top" style="display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="margin: 0;">Tareas urgentes</h3>
-    <ion-button fill="clear" size="small" routerLink="/tabs/tab2">
-      Ver todas
+    <!-- Botón de acción principal -->
+    <ion-button expand="block" color="primary" class="ion-margin-top" (click)="openAddModal()">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Nueva Tarea
     </ion-button>
-  </div>
 
-  <ion-list lines="inset">
-    @for (task of urgentTasks; track task.id) {
-      <ion-item>
-        <ion-icon name="alert-circle" slot="start" color="danger"></ion-icon>
-        <ion-label>
-          <h2>{{ task.title }}</h2>
-          <p>{{ task.category || 'Sin categoría' }}</p>
-        </ion-label>
-      </ion-item>
-    } @empty {
-      <ion-item>
-        <ion-label color="medium" class="ion-text-center">
-          ¡Genial! No hay tareas urgentes.
-        </ion-label>
-      </ion-item>
-    }
-  </ion-list>
+    <!-- Sección Tareas Urgentes (Reto Bonus) -->
+    <div class="ion-margin-top" style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0;">Tareas urgentes</h3>
+      <ion-button fill="clear" size="small" routerLink="/tabs/tab2">
+        Ver todas
+      </ion-button>
+    </div>
+
+    <ion-list lines="inset">
+      @for (task of urgentTasks; track task.id) {
+        <ion-item>
+          <ion-icon name="alert-circle" slot="start" color="danger"></ion-icon>
+          <ion-label>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.category || 'Sin categoría' }}</p>
+          </ion-label>
+        </ion-item>
+      } @empty {
+        <ion-item>
+          <ion-label color="medium" class="ion-text-center">
+            ¡Genial! No hay tareas urgentes.
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
 </ion-content>
